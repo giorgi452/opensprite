@@ -1,5 +1,4 @@
 use crate::app_state::AppState;
-use druid::keyboard_types::Key;
 use druid::kurbo::Rect;
 use druid::piet::RenderContext;
 use druid::{Color, Env, Event, EventCtx, LifeCycle, LifeCycleCtx, PaintCtx, Widget};
