@@ -32,7 +32,6 @@ impl Widget<AppState> for CanvasWidget {
     fn paint(&mut self, ctx: &mut PaintCtx, data: &AppState, _env: &Env) {
         let pixel_size = data.pixel_size;
 
-        // Draw grid
         for y in 0..data.canvas_width {
             for x in 0..data.canvas_height {
                 let rect = Rect::new(
@@ -77,6 +76,5 @@ impl Widget<AppState> for CanvasWidget {
         _data: &AppState,
         _env: &Env,
     ) {
-        // No specific lifecycle handling needed
     }
 }

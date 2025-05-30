@@ -17,12 +17,12 @@ pub struct AppState {
 
 impl AppState {
     pub fn new() -> Self {
-        let def_pixel_data = vec![vec![Color::WHITE; 32]; 32];
+        let def_pixel_data = vec![vec![Color::WHITE; 16]; 16];
         let def_frames_data = vec![def_pixel_data.clone()];
 
         AppState {
-            canvas_width: 32,
-            canvas_height: 32,
+            canvas_width: 16,
+            canvas_height: 16,
             pixel_size: 20.0,
             pixel_data: Arc::new(def_pixel_data),
             frames_data: Arc::new(def_frames_data),
@@ -65,8 +65,5 @@ impl AppState {
 
     pub fn zoom(&mut self, a: f64) {
         self.pixel_size += a;
-        if (a > 0.0 && self.pixel_size >= 32.0) || (a < 0.0 && self.pixel_size <= 0.0) {
-            return;
-        }
     }
 }
