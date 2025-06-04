@@ -10,18 +10,18 @@ impl Widget<AppState> for CanvasWidget {
         match event {
             Event::MouseDown(mouse) | Event::MouseMove(mouse) if mouse.buttons.has_left() => {
                 let pos = mouse.pos;
-                let x = (pos.x / data.pixel_size) as usize;
-                let y = (pos.y / data.pixel_size) as usize;
-                data.draw_pixel(x, y);
+                let x = (pos.x / data.canvas.pixel_size) as usize;
+                let y = (pos.y / data.canvas.pixel_size) as usize;
+                data.canvas.draw_pixel(x, y);
                 ctx.request_paint();
             }
             Event::Wheel(mouse) => {
                 let delta = mouse.wheel_delta.y;
                 if delta > 0.0 {
-                    data.zoom(1.0);
+                    data.canvas.zoom(1.0);
                     ctx.set_handled();
                 } else if delta < 0.0 {
-                    data.zoom(-1.0);
+                    data.canvas.zoom(-1.0);
                     ctx.set_handled();
                 }
             }
@@ -30,17 +30,17 @@ impl Widget<AppState> for CanvasWidget {
     }
 
     fn paint(&mut self, ctx: &mut PaintCtx, data: &AppState, _env: &Env) {
-        let pixel_size = data.pixel_size;
+        let pixel_size = data.canvas.pixel_size;
 
-        for y in 0..data.canvas_width {
-            for x in 0..data.canvas_height {
+        for y in 0..data.canvas.canvas_width {
+            for x in 0..data.canvas.canvas_height {
                 let rect = Rect::new(
                     x as f64 * pixel_size,
                     y as f64 * pixel_size,
                     (x + 1) as f64 * pixel_size,
                     (y + 1) as f64 * pixel_size,
                 );
-                ctx.fill(rect, &data.pixel_data[y][x]);
+                ctx.fill(rect, &data.canvas.pixel_data[y][x]);
                 ctx.stroke(rect, &Color::GRAY, 0.5);
             }
         }
@@ -64,8 +64,8 @@ impl Widget<AppState> for CanvasWidget {
         _env: &Env,
     ) -> druid::Size {
         druid::Size::new(
-            data.canvas_width as f64 * data.pixel_size,
-            data.canvas_height as f64 * data.pixel_size,
+            data.canvas.canvas_width as f64 * data.canvas.pixel_size,
+            data.canvas.canvas_height as f64 * data.canvas.pixel_size,
         )
     }
 

@@ -1,21 +1,14 @@
 use app_state::AppState;
-use components::{canvas_widget::CanvasWidget, toolbar::Toolbar};
-use druid::{AppLauncher, PlatformError, Widget, WidgetExt, WindowDesc, widget::Flex};
+use druid::{AppLauncher, PlatformError};
+use windows::index::Index;
 
 pub mod app_state;
+pub mod commands;
 pub mod components;
+pub mod controllers;
+pub mod states;
+pub mod windows;
 
 fn main() -> Result<(), PlatformError> {
-    let main_window = WindowDesc::new(ui_builder());
-    AppLauncher::with_window(main_window).launch(AppState::new())
-}
-
-fn ui_builder() -> impl Widget<AppState> {
-    let canvas = CanvasWidget;
-    let toolbar = Toolbar::new();
-
-    Flex::column()
-        .with_child(toolbar)
-        .with_child(canvas)
-        .padding(10.0)
+    AppLauncher::with_window(Index::new()).launch(AppState::new())
 }
