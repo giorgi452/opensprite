@@ -1,20 +1,25 @@
-use std::{path::Path, sync::Arc};
+use std::path::Path;
 
 use druid::{
-    ImageBuf, UnitPoint, Widget, WindowDesc,
+    ImageBuf, UnitPoint, Widget, WidgetExt, WindowConfig, WindowDesc,
     widget::{Align, Button, Flex, Image, SizedBox},
 };
 use image::ImageReader;
 
-use crate::{app_state::AppState, states::screen_state::Screen};
+use crate::{
+    app_state::AppState, components::menu::MenuC, controllers::widget_controller::WidgetController,
+};
 
-use super::main::Main;
+use super::new_project::NewProject;
+
 pub struct Index;
 
 impl Index {
     pub fn new() -> WindowDesc<AppState> {
         WindowDesc::new(Index::build_ui())
             .title("OpenSprite")
+            .menu(MenuC::basic)
+            .show_titlebar(true)
             .window_size((300.0, 150.0))
     }
 
@@ -43,13 +48,46 @@ impl Index {
                 UnitPoint::CENTER,
                 Image::new(image),
             )))
+            .with_spacer(30.0)
             .with_child(
-                Button::new("new project").on_click(|ctx, data: &mut AppState, _env| {
-                    data.screen = Arc::new(Screen::MAIN);
-                    ctx.window().close();
-                    ctx.new_window(Main::new());
-                    ctx.set_handled();
-                }),
+                Flex::column()
+                    .with_child(
+                        Button::new("New Project")
+                            .on_click(|ctx, data: &mut AppState, env| {
+                                ctx.new_sub_window(
+                                    WindowConfig::default()
+                                        .set_title("Sub Window")
+                                        .set_size((300.0, 120.0)),
+                                    NewProject::build_ui(),
+                                    AppState,
+                                    env,
+                                );
+
+                                ctx.set_handled();
+                            })
+                            .fix_height(30.0)
+                            .expand_width(),
+                    )
+                    .with_spacer(10.0)
+                    .with_child(
+                        Button::new("Open Recents")
+                            .on_click(|ctx, _data: &mut AppState, _env| {
+                                ctx.submit_command(druid::commands::QUIT_APP);
+                            })
+                            .fix_height(30.0)
+                            .expand_width(),
+                    )
+                    .with_spacer(10.0)
+                    .with_child(
+                        Button::new("Exit Program")
+                            .on_click(|ctx, _data: &mut AppState, _env| {
+                                ctx.submit_command(druid::commands::QUIT_APP);
+                            })
+                            .fix_height(30.0)
+                            .expand_width(),
+                    )
+                    .fix_width(200.0),
             )
+            .controller(WidgetController)
     }
 }

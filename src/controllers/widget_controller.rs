@@ -1,6 +1,10 @@
 use druid::{Env, Event, EventCtx, Widget};
 
-use crate::{app_state::AppState, commands::show_about::SHOW_ABOUT, windows::about::About};
+use crate::{
+    app_state::AppState,
+    commands::{goto_index::GOTO_INDEX, show_about::SHOW_ABOUT},
+    windows::{about::About, index::Index},
+};
 
 pub struct WidgetController;
 
@@ -18,6 +22,11 @@ impl<W: Widget<AppState>> druid::widget::Controller<AppState, W> for WidgetContr
                 ctx.new_window(About::new());
                 ctx.set_handled();
                 return;
+            }
+            if cmd.is(GOTO_INDEX) {
+                ctx.new_window(Index::new());
+                ctx.window().close();
+                ctx.set_handled();
             }
         }
         child.event(ctx, event, data, env);

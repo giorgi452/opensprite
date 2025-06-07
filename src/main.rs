@@ -8,6 +8,7 @@ pub mod components;
 pub mod controllers;
 pub mod states;
 pub mod windows;
+pub mod helpers;
 
 fn main() -> Result<(), PlatformError> {
     AppLauncher::with_window(Index::new()).launch(AppState::new())

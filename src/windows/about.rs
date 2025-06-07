@@ -1,6 +1,6 @@
 use druid::{
-    Widget, WidgetExt, WindowDesc,
-    widget::{Button, Flex, Label},
+    UnitPoint, Widget, WidgetExt, WindowDesc,
+    widget::{Align, Button, Flex, Label, SizedBox},
 };
 
 use crate::app_state::AppState;
@@ -15,12 +15,15 @@ impl About {
     }
 
     pub fn build_ui() -> impl Widget<AppState> {
-        Flex::column()
-            .with_child(Label::new("OpenSprite v1.0"))
-            .with_spacer(8.0)
-            .with_child(Label::new("© 2025 OpenSprite"))
-            .with_spacer(12.0)
-            .with_child(Button::new("Close").on_click(|ctx, _, _| ctx.window().close()))
-            .padding(10.0)
+        SizedBox::new(Align::horizontal(
+            UnitPoint::CENTER,
+            Flex::column()
+                .with_child(Label::new("OpenSprite v1.0"))
+                .with_spacer(8.0)
+                .with_child(Label::new("© 2025 OpenSprite"))
+                .with_spacer(12.0)
+                .with_child(Button::new("Close").on_click(|ctx, _, _| ctx.window().close()))
+                .padding(10.0),
+        ))
     }
 }

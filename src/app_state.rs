@@ -1,20 +1,23 @@
-use std::sync::Arc;
-
 use druid::{Data, Lens};
 
-use crate::{controllers::canvas_controller::CanvasController, states::screen_state::Screen};
+use crate::{
+    controllers::{canvas_controller::CanvasController, project_controller::ProjectController},
+    states::screen_state::Screen,
+};
 
 #[derive(Clone, Data, Lens)]
 pub struct AppState {
     pub canvas: CanvasController,
+    pub project: ProjectController,
     #[data(ignore)]
-    pub screen: Arc<Screen>,
+    pub screen: Screen,
 }
 
 impl AppState {
     pub fn new() -> Self {
         AppState {
-            screen: Arc::new(Screen::INDEX),
+            project: ProjectController::new(),
+            screen: Screen::INDEX,
             canvas: CanvasController::new(),
         }
     }

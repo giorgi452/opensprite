@@ -1,10 +1,12 @@
 use druid::{
-    LocalizedString, Menu, MenuItem, UnitPoint, Widget, WidgetExt, WindowDesc,
+    LocalizedString, UnitPoint, Widget, WidgetExt, WindowDesc,
     widget::{Align, Flex, SizedBox},
 };
 
 use crate::{
-    app_state::AppState, commands::show_about::SHOW_ABOUT, components::{canvas_widget::CanvasWidget, toolbar::Toolbar}, controllers::widget_controller::WidgetController
+    app_state::AppState,
+    components::{canvas_widget::CanvasWidget, menu::MenuC, toolbar::Toolbar},
+    controllers::widget_controller::WidgetController,
 };
 pub struct Main;
 
@@ -12,21 +14,7 @@ impl Main {
     pub fn new() -> WindowDesc<AppState> {
         WindowDesc::new(Main::build_ui())
             .title(LocalizedString::new("opensprite").with_placeholder("OpenSprite"))
-            .menu(|_window_id, _data: &AppState, _env| -> Menu<AppState> {
-                Menu::new(LocalizedString::new("opensprite"))
-                    .entry(
-                        Menu::new(LocalizedString::new("File")).entry(
-                            MenuItem::new(LocalizedString::new("Exit"))
-                                .command(druid::commands::QUIT_APP),
-                        ),
-                    )
-                    .separator()
-                    .entry(
-                        Menu::new(LocalizedString::new("Help")).entry(
-                            MenuItem::new(LocalizedString::new("About")).command(SHOW_ABOUT),
-                        ),
-                    )
-            })
+            .menu(MenuC::basic)
             .show_titlebar(true)
     }
 
