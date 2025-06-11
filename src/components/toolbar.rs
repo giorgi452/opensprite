@@ -43,13 +43,14 @@ impl Toolbar {
                 PencilButton::new().on_click(|_ctx, data: &mut AppState, _env| {
                     if data.canvas.curr_frame < data.canvas.frames_data.len() - 1 {
                         data.canvas.curr_frame += 1;
-                        data.canvas.pixel_data = Arc::new(data.canvas.frames_data[data.canvas.curr_frame].clone());
+                        data.canvas.pixel_data =
+                            Arc::new(data.canvas.frames_data[data.canvas.curr_frame].clone());
                     }
                 }),
             )
             .with_child(
                 PencilButton::new().on_click(|_ctx, data: &mut AppState, _env| {
-                    data.canvas.save_img("output.png");
+                    data.canvas.save_img(&data.project.path);
                 }),
             )
     }

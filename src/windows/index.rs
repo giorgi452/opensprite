@@ -1,7 +1,7 @@
 use std::path::Path;
 
 use druid::{
-    ImageBuf, UnitPoint, Widget, WidgetExt, WindowConfig, WindowDesc,
+    ImageBuf, UnitPoint, Widget, WidgetExt, WindowDesc,
     widget::{Align, Button, Flex, Image, SizedBox},
 };
 use image::ImageReader;
@@ -53,16 +53,8 @@ impl Index {
                 Flex::column()
                     .with_child(
                         Button::new("New Project")
-                            .on_click(|ctx, data: &mut AppState, env| {
-                                ctx.new_sub_window(
-                                    WindowConfig::default()
-                                        .set_title("Sub Window")
-                                        .set_size((300.0, 120.0)),
-                                    NewProject::build_ui(),
-                                    AppState,
-                                    env,
-                                );
-
+                            .on_click(|ctx, _data: &mut AppState, _env| {
+                                ctx.new_window(NewProject::new(ctx.window_id()));
                                 ctx.set_handled();
                             })
                             .fix_height(30.0)

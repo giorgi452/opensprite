@@ -17,13 +17,13 @@ pub struct CanvasController {
 
 impl CanvasController {
     pub fn new() -> Self {
-        let def_pixel_data = vec![vec![Color::WHITE; 32]; 32];
+        let def_pixel_data = vec![vec![Color::WHITE; 16]; 16];
         let def_frames_data = vec![def_pixel_data.clone()];
 
         CanvasController {
             canvas_width: 16,
             canvas_height: 16,
-            pixel_size: 50.0,
+            pixel_size: 25.0,
             pixel_data: Arc::new(def_pixel_data),
             frames_data: Arc::new(def_frames_data),
             curr_frame: 0,

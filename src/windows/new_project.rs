@@ -1,6 +1,6 @@
 use druid::text::TextAlignment;
 use druid::widget::{Align, SizedBox, TextBox};
-use druid::{FontDescriptor, FontFamily, LensExt, UnitPoint, WindowConfig};
+use druid::{FontDescriptor, FontFamily, LensExt, UnitPoint, WindowDesc, WindowId, commands};
 use druid::{
     Widget, WidgetExt,
     widget::{Button, Flex, Label},
@@ -11,13 +11,22 @@ use crate::controllers::canvas_controller::CanvasController;
 use crate::controllers::np_controller::NPController;
 use crate::controllers::project_controller::ProjectController;
 use crate::helpers::usize_to_string::UsizeToString;
+use crate::states::screen_state::Screen;
 
 use super::main::Main;
 
-pub struct NewProject;
+pub struct NewProject {
+    pub parent_window_id: WindowId,
+}
 
 impl NewProject {
-    pub fn build_ui() -> impl Widget<AppState> {
+    pub fn new(parent_window_id: WindowId) -> WindowDesc<AppState> {
+        WindowDesc::new(NewProject::build_ui(parent_window_id))
+            .title("OpenSprite")
+            .window_size((300.0, 150.0))
+    }
+
+    pub fn build_ui(parent_window_id: WindowId) -> impl Widget<AppState> {
         Flex::column()
             .with_child(
                 Label::new("New Project")
@@ -107,11 +116,15 @@ impl NewProject {
                 Flex::row()
                     .with_child(Button::new("Close").on_click(|ctx, _, _| ctx.window().close()))
                     .with_spacer(2.0)
-                    .with_child(Button::new("Create Project").on_click(|ctx, _, _| {
-                        ctx.window().close();
-                        ctx.new_window(Main::new());
-                        ctx.set_handled();
-                    })),
+                    .with_child(Button::new("Create Project").on_click(
+                        move |ctx, data: &mut AppState, _| {
+                            data.screen = Screen::MAIN;
+                            ctx.submit_command(commands::CLOSE_WINDOW.to(parent_window_id));
+                            ctx.window().close();
+                            ctx.new_window(Main::new());
+                            ctx.set_handled();
+                        },
+                    )),
             )))
             .padding(10.0)
             .controller(NPController)

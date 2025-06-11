@@ -1,8 +1,9 @@
+use std::sync::Arc;
+
 use druid::{
-    Env, Event, EventCtx, LifeCycleCtx, UpdateCtx,
+    Color, Env, Event, EventCtx, LifeCycleCtx, UpdateCtx,
     widget::{Controller, Widget},
 };
-use std::env;
 
 use crate::app_state::AppState;
 
@@ -31,9 +32,14 @@ impl<W: Widget<AppState>> Controller<AppState, W> for NPController {
 
         // If name changed, and path not overridden, sync path
         if old_name != data.project.name && !data.project.path_overridden {
-            let username = env::var("USER").unwrap_or_else(|_| "user".to_string());
-            data.project.path = format!("/home/{}/Pictures/{}", username, data.project.name);
+            let username = "giorgi";
+            data.project.path = format!("/home/{}/Pictures/{}.png", username, data.project.name);
         }
+
+        data.canvas.pixel_data = Arc::new(vec![
+            vec![Color::WHITE; data.canvas.canvas_width];
+            data.canvas.canvas_height
+        ]);
     }
 
     fn update(

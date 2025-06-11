@@ -3,6 +3,7 @@ use druid::{Env, Event, EventCtx, Widget};
 use crate::{
     app_state::AppState,
     commands::{goto_index::GOTO_INDEX, show_about::SHOW_ABOUT},
+    states::screen_state::Screen,
     windows::{about::About, index::Index},
 };
 
@@ -24,8 +25,9 @@ impl<W: Widget<AppState>> druid::widget::Controller<AppState, W> for WidgetContr
                 return;
             }
             if cmd.is(GOTO_INDEX) {
-                ctx.new_window(Index::new());
+                data.screen = Screen::INDEX;
                 ctx.window().close();
+                ctx.new_window(Index::new());
                 ctx.set_handled();
             }
         }
