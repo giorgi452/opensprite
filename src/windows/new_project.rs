@@ -1,6 +1,10 @@
+use std::sync::Arc;
+
 use druid::text::TextAlignment;
 use druid::widget::{Align, SizedBox, TextBox};
-use druid::{FontDescriptor, FontFamily, LensExt, UnitPoint, WindowDesc, WindowId, commands};
+use druid::{
+    Color, FontDescriptor, FontFamily, LensExt, UnitPoint, WindowDesc, WindowId, commands,
+};
 use druid::{
     Widget, WidgetExt,
     widget::{Button, Flex, Label},
@@ -118,6 +122,13 @@ impl NewProject {
                     .with_spacer(2.0)
                     .with_child(Button::new("Create Project").on_click(
                         move |ctx, data: &mut AppState, _| {
+                            data.canvas.pixel_data =
+                                Arc::new(vec![
+                                    vec![Color::WHITE; data.canvas.canvas_width];
+                                    data.canvas.canvas_height
+                                ]);
+                            data.canvas.frames_data =
+                                Arc::new(vec![data.canvas.pixel_data.clone().to_vec()]);
                             data.screen = Screen::MAIN;
                             ctx.submit_command(commands::CLOSE_WINDOW.to(parent_window_id));
                             ctx.window().close();

@@ -1,7 +1,7 @@
 use crate::app_state::AppState;
 use druid::kurbo::Rect;
 use druid::piet::RenderContext;
-use druid::{Color, Env, Event, EventCtx, LifeCycle, LifeCycleCtx, PaintCtx, Widget};
+use druid::{Color, Env, Event, EventCtx, LifeCycle, LifeCycleCtx, PaintCtx, Size, Widget};
 
 pub struct CanvasWidget;
 
@@ -10,10 +10,13 @@ impl Widget<AppState> for CanvasWidget {
         match event {
             Event::MouseDown(mouse) | Event::MouseMove(mouse) if mouse.buttons.has_left() => {
                 let pos = mouse.pos;
-                let x = (pos.x / data.canvas.pixel_size) as usize;
-                let y = (pos.y / data.canvas.pixel_size) as usize;
-                data.canvas.draw_pixel(x, y);
-                ctx.request_paint();
+                let x = (pos.x / data.canvas.pixel_size).floor() as usize;
+                let y = (pos.y / data.canvas.pixel_size).floor() as usize;
+                // Add bounds check to prevent invalid access
+                if x < data.canvas.canvas_width as usize && y < data.canvas.canvas_height as usize {
+                    data.canvas.draw_pixel(x, y);
+                    ctx.request_paint();
+                }
             }
             Event::Wheel(mouse) => {
                 let delta = mouse.wheel_delta.y;
@@ -31,17 +34,34 @@ impl Widget<AppState> for CanvasWidget {
 
     fn paint(&mut self, ctx: &mut PaintCtx, data: &AppState, _env: &Env) {
         let pixel_size = data.canvas.pixel_size;
+        let canvas_width = data.canvas.canvas_width as usize; // 32
+        let canvas_height = data.canvas.canvas_height as usize; // 8
 
-        for y in 0..data.canvas.canvas_width {
-            for x in 0..data.canvas.canvas_height {
-                let rect = Rect::new(
-                    x as f64 * pixel_size,
-                    y as f64 * pixel_size,
-                    (x + 1) as f64 * pixel_size,
-                    (y + 1) as f64 * pixel_size,
-                );
-                ctx.fill(rect, &data.canvas.pixel_data[y][x]);
-                ctx.stroke(rect, &Color::GRAY, 0.5);
+        // Ensure curr_frame is valid
+        if data.canvas.curr_frame >= data.canvas.frames_data.len() {
+            println!("Invalid frame index: {}", data.canvas.curr_frame);
+            return;
+        }
+
+        for y in 0..canvas_height {
+            // 0..8 for rows
+            for x in 0..canvas_width {
+                // 0..32 for columns
+                // Safe access to pixel_data
+                if let Some(color) = data.canvas.frames_data[data.canvas.curr_frame]
+                    .get(y)
+                    .and_then(|row| row.get(x))
+                {
+                    let rect = Rect::new(
+                        x as f64 * pixel_size, // x for width
+                        y as f64 * pixel_size, // y for height
+                        (x + 1) as f64 * pixel_size,
+                        (y + 1) as f64 * pixel_size,
+                    );
+                    // Convert Color to PietColor
+                    ctx.fill(rect, color);
+                    ctx.stroke(rect, &Color::GRAY, 0.5);
+                }
             }
         }
     }
@@ -62,8 +82,8 @@ impl Widget<AppState> for CanvasWidget {
         _bc: &druid::BoxConstraints,
         data: &AppState,
         _env: &Env,
-    ) -> druid::Size {
-        druid::Size::new(
+    ) -> Size {
+        Size::new(
             data.canvas.canvas_width as f64 * data.canvas.pixel_size,
             data.canvas.canvas_height as f64 * data.canvas.pixel_size,
         )
